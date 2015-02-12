@@ -1,0 +1,57 @@
+table tr td{
+	width: 150px;
+	height: 150px;
+	text-align: center;
+	font-size: 125px;
+	float: left;
+	border: 2px solid black;
+	cursor: pointer;
+}
+table{
+	border: 2px solid black;
+	border-spacing: 0px;
+	margin-bottom: 30px;
+	
+}
+h2{
+	border-bottom: 3px solid black;
+	height: 30px;
+	font-size: 20px;
+	text-align: center;
+}
+button{    
+    border: 3px solid black;
+    margin-bottom: 20px;
+    font-size: 20px;
+    cursor: pointer;
+    width: 156px;    
+}
+.clear{
+    clear: both;
+}
+.buttonActive{
+	background-color: #bbbbbb;
+}
+.buttonPassive{
+	background-color: #ffffff;
+}
+#logsField{
+	border: 3px solid black;
+	width: 300px;
+	height: 520px;
+	float:left;
+}
+#leftSide{
+	float: left;
+	margin-right: 50px;
+}
+#buttonNewGame{
+    float: right;
+}
+#buttonStart{
+    float: left;
+}
+#logsText{
+	width: 294px;
+	height: 450px;
+}
