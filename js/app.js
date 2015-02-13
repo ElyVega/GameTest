@@ -1,181 +1,181 @@
-var isStarted = false;
-var gameField;
-window.onload = function(){
+var GameTest = GameTest || {};
+GameTest.isStarted = false;
+GameTest.gameField;
+//Game essence is that the field is a square, so the COLUMN constant is not needed as well as the number of tiles in general
+GameTest.TILES_COUNT_IN_ROW = 3;
+GameTest.EMPTY_TILE_MARK = 0;
+GameTest.COMPUTER_MARK = -1;
+GameTest.USER_MARK = 1;
+GameTest.TILE_NUMBER_IN_ID = 4;
+{
     document.getElementById('buttonStart').onclick = function(){
-        if (!isStarted){
-            isStarted = true;
-			tilesReset();
-			this.className = 'buttonPassive';
-			document.getElementById('buttonNewGame').className = 'buttonActive';
-            log('Game began');
+		if (GameTest.isStarted) return;
+		GameTest.onStart();
+		this.className = 'buttonPassive';
+		document.getElementById('buttonNewGame').className = 'buttonActive';
+	}
+	document.getElementById('buttonNewGame').onclick = function(){
+		if (!GameTest.isStarted) return;
+		GameTest.onNewGame();
+		this.className = 'buttonPassive';
+		document.getElementById('buttonStart').className = 'buttonActive';			
+	}	
+	for (var i = 0; i < Math.pow(GameTest.TILES_COUNT_IN_ROW, 2); i++){
+		document.getElementById('cell' + i).onclick = function(){				
+			if ((GameTest.isStarted)&&(this.innerText == '')) GameTest.onTileClick(this);
 		}
 	}
-    var tiles = document.getElementsByTagName('td');
-    for (var i = 0; i < tiles.length; i++){
-        tiles[i].onclick = function(){
-            if ((isStarted)&&(this.innerText == '')){
-                this.innerText = 'X';
-                var tileNumber = parseInt(this.id.split('')[4]);
-				var x = parseInt(tileNumber / 3);
-				var y = tileNumber % 3;
-				gameField[x][y] = 1;
-                log('User: ' + (x + 1) + ', ' + (y + 1));
-				var nextAction = checkGameField();
-				switch(nextAction[0])//new game after user win\loss by requirements is considered as just a new game, not as a function of "New game"
-				{
-					case 'UserWon':{
-						log('User won');						
-						refreshGameField();
-						log('New game began');
-						return;
-					}
-					case 'ComputerTurn':{
-						computerTurn(nextAction[1], nextAction[2]);						
-						return;
-					}
-					case 'ComputerWon':{
-						computerTurn(nextAction[1], nextAction[2]);
-						log('Computer won');						
-						refreshGameField();
-						log('New game began');
-						return;
-					}
-					case 'DrawnGame':{
-						log('Drawn game');						
-						refreshGameField();
-						log('New game began');
-					}
-				}
+}
+GameTest.onStart = function(){
+	with(GameTest){
+		if (!isStarted){
+			isStarted = true;
+			tilesReset();			
+			log('Game began');
+		}
+	}
+}
+GameTest.onNewGame = function(){
+	with(GameTest){
+		refreshGameField();
+		document.getElementById('logsText').innerHTML = '';
+		isStarted = false;
+	}
+}
+GameTest.onTileClick = function(currentTile){	
+	currentTile.innerText = 'X';
+	with(GameTest){
+		var tileNumber = parseInt(currentTile.id.split('')[TILE_NUMBER_IN_ID]);				
+		var x = parseInt(tileNumber / TILES_COUNT_IN_ROW);
+		var y = tileNumber % TILES_COUNT_IN_ROW;				
+		gameField[x][y] = USER_MARK;
+		log('User: ' + (x + 1) + ', ' + (y + 1));
+		var nextAction = checkGameField();
+		var KEY = 0;
+		var X_COORD = 1;
+		var Y_COORD = 2;
+		//new game after user win\loss by requirements is considered as just a new game, not as a function of "New game"
+		switch(nextAction[KEY])
+		{
+			case 'UserWon':{
+				log('User won');						
+				refreshGameField();
+				log('New game began');
+				return;
+			}
+			case 'ComputerTurn':{
+				computerTurn(nextAction[X_COORD], nextAction[Y_COORD]);
+				return;
+			}
+			case 'ComputerWon':{
+				computerTurn(nextAction[X_COORD], nextAction[Y_COORD]);
+				log('Computer won');						
+				refreshGameField();
+				log('New game began');
+				return;
+			}
+			case 'DrawnGame':{
+				log('Drawn game');						
+				refreshGameField();
+				log('New game began');
 			}
 		}
 	}
-    document.getElementById('buttonNewGame').onclick = function(){
-		if (!isStarted) return;
-        refreshGameField();
-		document.getElementById('logsText').innerHTML = '';
-		this.className = 'buttonPassive';
-		document.getElementById('buttonStart').className = 'buttonActive';
-		isStarted = false;
-		
-	}    
 }
-function log(text){
-    document.getElementById('logsText').innerHTML += text + '\n';
+GameTest.log = function(text){
+	document.getElementById('logsText').innerHTML += text + '\n';
 	document.getElementById('logsText').scrollTop = document.getElementById('logsText').scrollHeight;
 }
-function refreshGameField(){
-	var tiles = document.getElementsByTagName('td');
-	for (var i = 0; i < tiles.length; i++){
-		tiles[i].innerText = '';
+GameTest.refreshGameField = function(){
+	with(GameTest){
+		for (var i = 0; i < Math.pow(TILES_COUNT_IN_ROW, 2); i++){
+			document.getElementById('cell' + i).innerText = '';
+		}
+		tilesReset();
 	}
-	tilesReset();
 }
-function tilesReset(){
-	gameField = [];
-	for (var i = 0; i < 3; i++){
-		gameField[i] = [];
-		for (var j = 0; j < 3; j++){
-			gameField[i][j] = 0;
+GameTest.tilesReset = function(){
+	with(GameTest){
+		gameField = [];
+		for (var i = 0; i < TILES_COUNT_IN_ROW; i++){
+			gameField[i] = [];
+			for (var j = 0; j < TILES_COUNT_IN_ROW; j++){
+				gameField[i][j] = EMPTY_TILE_MARK;
+			}
 		}
 	}
 }
-function computerTurn(x, y){
-	gameField[x][y] = -1;
-	var cellId = 'cell' + ((x * 3) + y);
-	document.getElementById(cellId).innerText = 'O';
-	log('Computer: ' + (x + 1) + ', ' + (y + 1));
+GameTest.computerTurn = function(x, y){
+	with(GameTest){
+		gameField[x][y] = COMPUTER_MARK;
+		var cellId = 'cell' + ((x * TILES_COUNT_IN_ROW) + y);
+		document.getElementById(cellId).innerText = 'O';
+		log('Computer: ' + (x + 1) + ', ' + (y + 1));
+	}
 }
-function seekEmptyTiles(){
+GameTest.seekEmptyTiles = function(){
 	var result = [];
-	for (var i = 0; i < 3; i++){
-		for (var j = 0; j < 3; j++)
-		if (gameField[i][j] == 0) result.push([i, j]);
+	with(GameTest){
+		for (var i = 0; i < TILES_COUNT_IN_ROW; i++){
+			for (var j = 0; j < TILES_COUNT_IN_ROW; j++)
+			if (gameField[i][j] == EMPTY_TILE_MARK) result.push([i, j]);
+		}
 	}
 	return result;
 }
-function checkGameField(){
+GameTest.checkGameField = function(){
 	var computerWon = [];
-	var computerTurn = [];
-	var userWon = false;	
+	var computerNextTurn = [];	
 	var sumDiagonal_0 = 0;
 	var sumDiagonal_1 = 0;
-	for (var i = 0; i < 3; i++){
-		var sumRow = 0;
-		var sumCol = 0;
-		for (var j = 0; j < 3; j++){
-			sumRow += gameField[i][j];
-			sumCol += gameField[j][i];			
-		}
-		if ((sumRow == 3)||(sumCol == 3)){//User won
-			return ['UserWon'];
-		}
-		if (sumRow == -2){//Computer almost won
-			for (var j = 0; j < 3; j++){
-				if (gameField[i][j] == 0){
-					computerWon = ['ComputerWon', i, j];
+	with(GameTest){
+		for (var i = 0; i < TILES_COUNT_IN_ROW; i++){
+			var sumRow = 0;
+			var sumCol = 0;
+			//Check vertical and horizontal sum. Computer points are negative, User points are positive for readability can be divided into two cycles - 1 for horizontal sum, 2 for vertical
+			for (var j = 0; j < TILES_COUNT_IN_ROW; j++){
+				sumRow += gameField[i][j];				
+				sumCol += gameField[j][i];			
+			}
+			if ((sumRow == TILES_COUNT_IN_ROW)||(sumCol == TILES_COUNT_IN_ROW)){
+				return ['UserWon'];
+			}
+			//Victory is near
+			if ((Math.abs(sumRow) == TILES_COUNT_IN_ROW - 1)||(Math.abs(sumCol) == TILES_COUNT_IN_ROW - 1)){
+				for (var j = 0; j < TILES_COUNT_IN_ROW; j++){
+					if (gameField[i][j] == EMPTY_TILE_MARK){
+						if (sumRow == -(TILES_COUNT_IN_ROW) + 1) computerWon = ['ComputerWon', i, j];
+						if (sumRow == TILES_COUNT_IN_ROW - 1) computerNextTurn = ['ComputerTurn', i, j];
+					}
+					if (gameField[j][i] == EMPTY_TILE_MARK){
+						if (sumCol == -(TILES_COUNT_IN_ROW) + 1) computerWon = ['ComputerWon', j, i];
+						if (sumCol == TILES_COUNT_IN_ROW - 1) computerNextTurn = ['ComputerTurn', j, i];
+					}
 				}
+			}		
+			sumDiagonal_0 += gameField[i][i];
+			sumDiagonal_1 += gameField[TILES_COUNT_IN_ROW - 1 - i][i];
+		}
+		if ((sumDiagonal_0 == TILES_COUNT_IN_ROW)||(sumDiagonal_1 == TILES_COUNT_IN_ROW)) return ['UserWon'];
+		if (computerWon.length != 0) return computerWon;
+		//Victory is near by diagonal
+		if ((Math.abs(sumDiagonal_0) == TILES_COUNT_IN_ROW - 1)||(Math.abs(sumDiagonal_1) == TILES_COUNT_IN_ROW - 1)){
+			for (var i = 0; i < TILES_COUNT_IN_ROW; i++){
+				if ((gameField[i][i] == EMPTY_TILE_MARK)&&(sumDiagonal_0 == -(TILES_COUNT_IN_ROW) + 1)) return ['ComputerWon', i, i];			
+				if ((gameField[TILES_COUNT_IN_ROW - 1 - i][i] == EMPTY_TILE_MARK)&&(sumDiagonal_1 == -(TILES_COUNT_IN_ROW) + 1)) return ['ComputerWon', TILES_COUNT_IN_ROW - 1 - i, i];
+				if ((gameField[i][i] == 0)&&(sumDiagonal_0 == TILES_COUNT_IN_ROW - 1)) computerNextTurn = ['ComputerTurn', i, i];			
+				if ((gameField[TILES_COUNT_IN_ROW - 1 - i][i] == 0)&&(sumDiagonal_1 == TILES_COUNT_IN_ROW - 1)) computerNextTurn = ['ComputerTurn', TILES_COUNT_IN_ROW - 1 - i, i];
 			}
 		}
-		if (sumCol == -2){//Computer almost won
-			for (var j = 0; j < 3; j++){
-				if (gameField[j][i] == 0){
-					computerWon = ['ComputerWon', j, i];
-				}
-			}
-		}
-		if (sumRow == 2){//User almost won
-			for (var j = 0; j < 3; j++){
-				if (gameField[i][j] == 0){
-					computerTurn = ['ComputerTurn', i, j];
-				}
-			}
-		}
-		if (sumCol == 2){//User almost won
-			for (var j = 0; j < 3; j++){
-				if (gameField[j][i] == 0){
-					computerTurn = ['ComputerTurn', j, i];
-				}
-			}
-		}
-		sumDiagonal_0 += gameField[i][i];
-		sumDiagonal_1 += gameField[2 - i][i];
+		//Block for user victory
+		if (computerNextTurn.length != 0) return computerNextTurn;
+		//Key tile - center
+		if (gameField[parseInt(TILES_COUNT_IN_ROW / 2)][parseInt(TILES_COUNT_IN_ROW / 2)] == 0) return ['ComputerTurn', parseInt(TILES_COUNT_IN_ROW / 2), parseInt(TILES_COUNT_IN_ROW / 2)];
+		var computerTurnVariables = seekEmptyTiles();	
+		if (computerTurnVariables.length == 0) return ['DrawnGame'];
+		var selectedVariable = Math.floor(Math.random() * computerTurnVariables.length);
+		var X_COORD = 0;
+		var Y_COORD = 1;
+		return ['ComputerTurn', computerTurnVariables[selectedVariable][X_COORD], computerTurnVariables[selectedVariable][Y_COORD]];
 	}
-	if ((sumDiagonal_0 == 3)||(sumDiagonal_1 == 3)){//User won by diagonal
-		return ['UserWon'];
-	}
-	if (computerWon.length != 0) return computerWon;
-	if (sumDiagonal_0 == -2){//Computer almost won by diagonal
-		for (var i = 0; i < 3; i++){
-			if (gameField[i][i] == 0){
-				return ['ComputerWon', i, i];
-			}
-		}
-	}
-	if (sumDiagonal_1 == -2){//Computer almost won by diagonal
-		for (var i = 0; i < 3; i++){
-			if (gameField[2 - i][i] == 0){
-				return ['ComputerWon', 2 - i, i];
-			}
-		}
-	}
-	if (sumDiagonal_0 == 2){//User almost won by diagonal
-		for (var i = 0; i < 3; i++){
-			if (gameField[i][i] == 0){
-				computerTurn = ['ComputerTurn', i, i];
-			}
-		}
-	}
-	if (sumDiagonal_1 == 2){//User almost won by diagonal
-		for (var i = 0; i < 3; i++){
-			if (gameField[2 - i][i] == 0){
-				computerTurn = ['ComputerTurn', 2 - i, i];
-			}
-		}
-	}	
-	if (computerTurn.length != 0) return computerTurn;//Block for user winning
-	if (gameField[1][1] == 0) return ['ComputerTurn', 1, 1];//Key tile
-	var computerTurnVariables = seekEmptyTiles();
-	if (computerTurnVariables.length == 0) return ['DrawnGame'];
-	var selectedVariable = Math.floor(Math.random() * computerTurnVariables.length);
-	return ['ComputerTurn', computerTurnVariables[selectedVariable][0], computerTurnVariables[selectedVariable][1]];
-}
+}					

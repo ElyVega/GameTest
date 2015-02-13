@@ -1,30 +1,15 @@
-table tr td{
-	width: 150px;
-	height: 150px;
-	text-align: center;
-	font-size: 125px;
-	float: left;
-	border: 2px solid black;
-	cursor: pointer;
-}
-table{
-	border: 2px solid black;
-	border-spacing: 0px;
-	margin-bottom: 30px;
-	
-}
 h2{
 	border-bottom: 3px solid black;
 	height: 30px;
 	font-size: 20px;
 	text-align: center;
 }
-button{    
-    border: 3px solid black;
-    margin-bottom: 20px;
+button{
+	margin-bottom: 20px;
     font-size: 20px;
+	width: 156px;
+    border: 3px solid black;
     cursor: pointer;
-    width: 156px;    
 }
 .clear{
     clear: both;
@@ -35,6 +20,16 @@ button{
 .buttonPassive{
 	background-color: #ffffff;
 }
+.tile{
+	width: 150px;
+	height: 150px;
+	text-align: center;
+	font-size: 125px;	
+	margin: 0px;
+	float: left;
+	border: 2px solid black;
+	cursor: pointer;
+}
 #logsField{
 	border: 3px solid black;
 	width: 300px;
@@ -43,7 +38,7 @@ button{
 }
 #leftSide{
 	float: left;
-	margin-right: 50px;
+	margin-right: 50px;	
 }
 #buttonNewGame{
     float: right;
@@ -54,4 +49,9 @@ button{
 #logsText{
 	width: 294px;
 	height: 450px;
+}
+#gameField{
+	border: 2px solid black;
+	height: 462px;
+	width: 462px;
 }
